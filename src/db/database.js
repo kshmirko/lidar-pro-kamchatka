@@ -48,6 +48,48 @@ class Database{
     async findMeasurementById(meas_id){
         return this.db.table('Measurements').get(meas_id).run()
     }
+
+    /**
+     * Insert new measurement into databse
+     * @param {Object} exp - experiment object
+     * @param {List<Object>} meas list of measurement objects 
+     */
+    async createExperiment(exp, meas){
+        // insert experinent ad get pk
+        const exp_res = await this.db.table('Experiments').insert(exp).run()
+        if(exp_res.inserted == 0){
+            return false
+        }
+
+
+        exp_id = exp_res.generated_keys[0]
+        
+        // set exp_id as a field of meas[]
+        const N = meas.length
+
+        for(let i=0; i<N; i++){
+            meas[i].exp_id = exp_id
+        }
+
+        // and upload to db
+        const meas_res = await this.db.table('Measurements').insert(meas).run()
+
+        if(meas_res.inserted>0){
+            return true
+        }else{
+            return false
+        }
+    }
+
+
+    /**
+     * Deletes experiment and all connected measurements from database
+     * @param {string} exp_id pk of experiment object
+     */
+    async deleteExperimentById(exp_id){
+        this.db.table('Measurements').filter({exp_id:exp_id}).delete().run()
+        this.db.table('Experiments').get(exp_id).delete().run()
+    }
 }
 
 module.exports = Database
