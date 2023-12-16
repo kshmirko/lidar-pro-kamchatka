@@ -2,6 +2,10 @@
 
 
 class Database{
+    /**
+     * 
+     * @param {object} options - structure that contains connection parameters
+     */
     constructor(options){
         this.db = require('rethinkdbdash')(options)
     }
@@ -12,6 +16,12 @@ class Database{
      */
     async tables(){
         return this.db.tableList().run()
+    }
+
+    async checkTableOrCreate(tblname){
+        if(tblname in this.tables()){
+            
+        }
     }
 
     /**
