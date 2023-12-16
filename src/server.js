@@ -1,23 +1,20 @@
+require('dotenv').config()
+
 const fastify = require('fastify')({
     logger:true
 })
 
 fastify.register(require('./plugins/rethinkdb-plugin'), {
-    host: 'lidarbackup.dvo.ru',
-    port: 28015,
-    db: 'Lidar',
-    user: 'lidar_user',
-    password: 'lidar_user'
-})
-
-
-fastify.get('/tables', async (request, reply)=>{
-    return await fastify.rethinkdb.findAllExperiments()
+    host: process.env.RETHINKDB_HOST,
+    port: process.env.RETHINKDB_PORT,
+    db: process.env.RETHINKDB_DB,
+    user: process.env.RETHINKDB_USER,
+    password: process.env.RETHINKDB_PASS
 })
 
 fastify.register(require('./routes/experiments-route'), { prefix: '/v1' })
 
-fastify.listen({ port: 3000 }, err => {
+fastify.listen({ port: process.env.APP_PORT }, err => {
     if (err) throw err
     console.log(`server listening on ${fastify.server.address().port}`)
 })
