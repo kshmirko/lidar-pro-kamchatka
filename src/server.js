@@ -1,4 +1,5 @@
 require('dotenv').config()
+const multipart = require('@fastify/multipart')
 
 const fastify = require('fastify')({
     logger:true
@@ -12,6 +13,7 @@ fastify.register(require('./plugins/rethinkdb-plugin'), {
     password: process.env.RETHINKDB_PASS
 })
 
+fastify.register(multipart)
 fastify.register(require('./routes/experiments-route'), { prefix: '/v1' })
 
 fastify.listen({ port: process.env.APP_PORT }, err => {
