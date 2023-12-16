@@ -57,7 +57,7 @@ class Database{
     async createExperiment(exp, meas){
         // insert experinent ad get pk
         const exp_res = await this.db.table('Experiments').insert(exp).run()
-        if(exp_res.inserted == 0){
+        if(exp_res.errors != 0){
             return false
         }
 
@@ -74,7 +74,7 @@ class Database{
         // and upload to db
         const meas_res = await this.db.table('Measurements').insert(meas).run()
 
-        if(meas_res.inserted>0){
+        if(meas_res.errors==0){
             return true
         }else{
             return false
@@ -87,8 +87,17 @@ class Database{
      * @param {string} exp_id pk of experiment object
      */
     async deleteExperimentById(exp_id){
-        this.db.table('Measurements').filter({exp_id:exp_id}).delete().run()
-        this.db.table('Experiments').get(exp_id).delete().run()
+        let res = await this.db.table('Measurements').filter({exp_id:exp_id}).delete().run()
+        if (res.errors!=0){
+            return false;
+        }
+        ret = await this.db.table('Experiments').get(exp_id).delete().run()
+
+        if(ret.errors!=null){
+            return false
+        }
+
+        return true
     }
 }
 

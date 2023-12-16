@@ -16,7 +16,8 @@ module.exports  =  function (fastify, opts, done) {
     })
 
     fastify.post('/experiments', async (req, rep)=>{
-        
+        const data = req.body
+        console.log(data)
     })
     done()
 }
